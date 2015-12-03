@@ -1,0 +1,2 @@
+module QJSON
+end
