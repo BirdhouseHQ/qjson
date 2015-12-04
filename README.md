@@ -91,8 +91,8 @@ context is individually versioned, so you don't have to worry about that!
 A QJRB file looks like this, in this case a playlist object:
 
 ```ruby
-association(:tracks,:list_item,THIS_VERSION,{ limit: 10 })
-association(:watchers,:names_and_ids,REQUEST_VERSION,{ limit: 4 })
+association(:tracks,:list_item,this_version,{ limit: 10 })
+association(:watchers,:names_and_ids,request_version,{ limit: 4 })
 association_count(:watchers_count,:watchers);
 # either:
 attributes(:asdf,:one)
@@ -113,31 +113,27 @@ sacrifices optimizability for complexity.
 
 You can also create more advanced renderers that encode serialization and
 deserialization.  These files have the extension `.rb` since they are just normal
-ruby files.
+ruby files.  They are evaluated in the context of a subclass of QJSON::Base.
 
 ```ruby
-class Playlist_Show_20151223 < QJSON::Base
-  def to_json(object)
-    includes(:associated_record)
-    h = object.as_json(only: [:field1,:field2])
-    h[:other] = render(object.associated_record,:subobject,REQUEST_VERSION)
-    h    
-  end
+def to_json
+  # call includes first!  This will prepare the object if necessary, saving you
+  # N+1 DB hits.
+  includes(:associated_record)
+  h = object.as_json(only: [:field1,:field2])
+  h[:other] = render(object.associated_record,:subobject,request_version)
+  h    
+end
 
-  # here, object is the object to assign attributes to - DO NOT SAVE!!!
-  # it could be a "new" object (without ID), or an existing object.  Do not
-  # perform validations, authorization, or anything else.  Just set values
-  # on the object (and associated if necessary objects), exactly the inverse of
-  # to_json
-  def from_json(object,json_hash)
-    object.assign_attributes(h.slice(:field1,:field2))
-    parse(object.other,h[:other],:subobject,REQUEST_VERSION)
-  end
+# here, object is the object to assign attributes to - DO NOT SAVE!!!
+# it could be a "new" object (without ID), or an existing object.  Do not
+# perform validations, authorization, or anything else.  Just set values
+# on the object (and associated if necessary objects), exactly the inverse of
+# to_json
+def from_json
+  object.assign_attributes(h.slice(:field1,:field2))
+  parse(object.other,h[:other],:subobject,request_version)
 end
 ```
-
-
-
-
 
 This project rocks and uses MIT-LICENSE.
