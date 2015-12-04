@@ -43,8 +43,8 @@ choice, and so this has frustrated me no end.  The basics:
 
 - In my experience, the Rails render pipeline is unacceptably slow
 - Locating JSON serializers in their own directory is a little silly,
-  serializers are views, just not immediately to humans, so they belong in the
-  `app/views` directory.
+  serializers are views (html isn't really human-visible either!), so they
+  belong in the `app/views` directory.
 - Changing code in `development` mode should render the most recent file
 - ENV=`production` should cache all methods for rendering JSON
 - Ruby/rails hash manipulation functions are rich and well-understood way of
@@ -72,20 +72,26 @@ Rendering with QJson is easy:
 
 Where `item` is the thing you want rendered, `context` is the context within
 which it should be rendered, and `version` is the desired version.  QJSON will
-always pick the highest version that is less than or equal to the incoming
-`version`.  **versions** in qJSON can be any string, but are preferred to be
-a date stamp (e.g. `20151223`), so that they look different from traditional
-semantic versions like `v1`, `v2`, `v3` etc.
+pick the highest version (tested by string greater-than) that is less than or
+equal to the incoming `version`.  **versions** in qJSON can be any string, but
+are preferred to be a date stamp (e.g. `20151223`), so that they look different
+from traditional semantic versions like `v1`, `v2`, `v3` etc.  If you have two
+or more 'tracks' of versions (say one for mobile, one for desktop app), you can
+add a prefix, making the versions `m-20151223` and `d-20151223` - the same string
+comparison rules will still give you the correct version.  If there is no
+matching parser, your object will simply be converted using the default
+serializer, which copies across every attribute on the model.
 
-This is cool, because any request from the client has a semantic version and a
-syntactic version.  As you improve different parts of the client, you can
-increment these values separately.
+This process is desirable, because any request from the client can have a
+semantic version and a syntactic version.  As you improve different parts of the
+client, you can increment these values separately.  You could also define a
+syntactic version at login time in your API server.
 
 You add versioned serializers in `app/views/api/<model>s/<context>.<version>.qjrb`
 
 The `context` is the named context within which you are rendering the thing, in
 general, there are two contexts, `show` (where you're looking at a comprehensive
-view of the object) and `_item` (where you are looking at the item in a list of
+view of the object) and `item` (where you are looking at the item in a list of
 items).  You are in charge of the naming conventions here, just make sure they
 fit with normal Rails naming conventions in a way that makes sense.  An example
 of a third context would be if you have two ways in which items get shown in a
@@ -118,7 +124,7 @@ sacrifices optimizability for complexity.
 
 You can also create more advanced renderers that encode serialization and
 deserialization.  These files have the extension `.rb` since they are just normal
-ruby files.  They are evaluated in the context of a subclass of QJSON::Base.
+ruby files.  They are evaluated in the context of a subclass of `QJSON::Base`.
 
 ```ruby
 def to_json
@@ -141,4 +147,8 @@ def from_json
 end
 ```
 
-This project rocks and uses MIT-LICENSE.
+## Open source
+
+This project rocks and uses MIT-LICENSE.  Bug reports and PR's welcome, though
+keep in mind that any increase in scope or complexity will be met with plenty
+of scrutiny.
