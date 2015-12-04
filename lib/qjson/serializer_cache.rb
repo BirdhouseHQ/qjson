@@ -1,6 +1,6 @@
 class QJSON::SerializerCache
   # View RE: app/views/api/<possibly namespaced model name>/<context>.<version>.<qjrb or rb>
-  VIEW_RE = /app\/views\/api\/(.*?)\/([^\.\/]+)\.([^\.\/]+)\.(qjrb|rb)$/
+
 
   def self.cache(name,context,version,hash=nil)
     @_cache ||= {}
@@ -8,9 +8,8 @@ class QJSON::SerializerCache
 
   end
 
-  def self.path_for(klass,context,version)
+  def self.path_for(name,context,version)
     version = version.to_s
-    name = klass.name.underscore.pluralize
 
     all_options = Dir.glob("#{Rails.root}/app/views/api/#{name}/#{context.to_s}.*")
 
@@ -18,7 +17,7 @@ class QJSON::SerializerCache
     file_version = nil
 
     all_options.each do |path|
-      m = path.match(VIEW_RE)
+      m = path.match(QJSON::Base::VIEW_RE)
 
       # extension not qjrb or rb is most common reason to skip
       next unless m
@@ -41,8 +40,13 @@ class QJSON::SerializerCache
   end
 
   def self.load_path(path)
+    return Class.new(QJSON::Base) unless path
+
     if(path.match(/\.rb$/))
-      require path
+      c = Class.new(QJSON::Base)
+      c.source_path(path)
+      c.class_eval File.read(path)
+      c
     elsif(path.match(/\.qjrb$/))
       c = Class.new(QJSON::Base)
       c.source_path(path)
@@ -53,16 +57,13 @@ class QJSON::SerializerCache
     end
   end
 
-  def self.class_for(klass,context,version)
-    path = path_for(klass,context,version)
+  def self.class_for(name,context,version)
+    path = path_for(name,context,version)
+    puts "Could not find path for #{name} #{context} #{version}" unless path
     load_path(path)
-
-    # we have now picked the path
-
   end
 
   def self.find(record,context,version)
-
-    load_class_for(record.class,context,version)
+    class_for(record.class.name.underscore.pluralize,context,version)
   end
 end
