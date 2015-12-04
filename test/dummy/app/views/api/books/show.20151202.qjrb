@@ -1,2 +1,0 @@
-attributes(:id,:title,:isbn)
-association(:author,:just_title,REQUEST_VERSION)
