@@ -7,23 +7,26 @@ class QJSON::Base
   # creates an instance of the class, so that it can use class variables to
   # store whatever is desired.
 
-  def self.parse(object,hash,requested_version)
+  def self.parse(object,hash,requested_version,options)
     parser = self.new
 
     renderer.object = object
-    renderer.hash = hash
     renderer.request_version = requested_version
+    renderer.options = options
+
+    renderer.hash = hash
 
     renderer.call_from_json
 
     renderer.object
   end
 
-  def self.render(object,requested_version)
+  def self.render(object,requested_version,options)
     renderer = self.new
 
     renderer.request_version = requested_version
     renderer.object = object
+    renderer.options = options
 
     renderer.hash = {}
 
@@ -34,7 +37,7 @@ class QJSON::Base
 
   # ### Metadata Methods
 
-  attr_accessor :object,:hash,:collection_serializer
+  attr_accessor :object,:hash,:options,:collection_serializer
 
   attr_accessor :request_version
 
@@ -73,7 +76,11 @@ class QJSON::Base
 
   def call_to_json
     @direction = :to_json
-    to_json
+    r = to_json
+
+    if(r.kind_of?(Hash) && r != hash)
+      hash.merge! r
+    end
   end
 
   def call_from_json
