@@ -1,0 +1,2 @@
+attributes(:id,:title)
+association(:author,:just_title,REQUEST_VERSION)

@@ -1,7 +1,6 @@
 require 'test_helper'
 
-class QjsonTest < ActiveSupport::TestCase
-  test "truth" do
-    assert_kind_of Module, Qjson
-  end
+context "module basics" do
+  asserts('Module has render function') { QJSON.respond_to? :render }
+  asserts('Module has parse function') { QJSON.respond_to? :parse }
 end

@@ -7,17 +7,19 @@ require "qjson/version"
 Gem::Specification.new do |s|
   s.name        = "qjson"
   s.version     = QJSON::VERSION
+  s.platform    = Gem::Platform::RUBY
   s.authors     = ["Daniel Staudigel"]
   s.email       = ["dstaudigel@gmail.com"]
-  s.homepage    = "https://github.com/TheHumanEffort/qjson"
-  s.summary     = "QJSON is a rails gem for quickly serializing and deserializing JSON."
-  s.description = "qjson aims to solve the majority of json serialization issues in a way that is performant, expressive, and open to the complexities of long-term API management."
+  s.homepage    = "http://github.com/thehumaneffort/qjson"
+  s.summary     = "Summary of Qjson."
+  s.description = "Description of Qjson."
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
-  s.test_files = Dir["test/**/*"]
+  s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
 
-  s.add_dependency "rails", "~> 4.2.4"
+  s.add_dependency "rails", "~> 4.2.0"
 
-  # s.add_development_dependency "sqlite3"
+  s.add_development_dependency "sqlite3"
+  s.add_development_dependency "riot"
 end
