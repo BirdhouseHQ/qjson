@@ -1,6 +1,11 @@
 qJSON
 ==========
-WIP!
+## WIP!
+Note: qJSON is under active development, and is not ready for use in production.
+Specifically, there is currently no caching of serializers and the structure is
+likely to change due to feedback.
+
+### Introduction
 
 A quick JSON serialization gem with versioning baked in deep.
 
