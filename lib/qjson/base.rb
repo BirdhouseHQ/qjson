@@ -150,7 +150,7 @@ class QJSON::Base
     if(@direction == :to_json)
       # some 'view' models contain nil keys in their attributes hashes,
       # eliminate these by adding nil to the except clause:
-      @hash.merge! @object.attributes.except(nil).slice(*s_attr_names)
+      @hash.merge! object_attributes.except(nil).slice(*s_attr_names)
     elsif(@direction == :from_json)
       @object.assign_attributes(@hash.slice(*s_attr_names))
     else
@@ -164,11 +164,18 @@ class QJSON::Base
     if(@direction == :to_json)
       # some 'view' models contain nil keys, exclude them with the nil addition
       # to the except clause
-      @hash.merge! @object.attributes.except(nil,*s_attr_names)
+      @hash.merge! object_attributes.except(nil,*s_attr_names)
     elsif(@direction == :from_json)
       @object.assign_attributes(@hash.except(*attr_names))
     else
       raise "InvalidDirection"
     end
   end
+
+  def object_attributes
+    return { } unless @object
+    return @object.attributes if @object.respond_to? :attributes
+    @object.as_json
+  end
+  
 end
