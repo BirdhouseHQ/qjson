@@ -7,18 +7,18 @@ class QJSON::Base
   # creates an instance of the class, so that it can use class variables to
   # store whatever is desired.
 
-  def self.parse(object,hash,requested_version,options)
+  def self.parse(object,hash,requested_version,options={})
     parser = self.new
 
-    renderer.object = object
-    renderer.request_version = requested_version
-    renderer.options = options
+    parser.object = object
+    parser.request_version = requested_version
+    parser.options = options
 
-    renderer.hash = hash
+    parser.hash = hash
 
-    renderer.call_from_json
+    parser.call_from_json
 
-    renderer.object
+    parser.object
   end
 
   def self.render(object,requested_version,options)
