@@ -46,12 +46,12 @@ module QJSON
       if(path.match(/\.rb$/))
         c = Class.new(QJSON::Base)
         c.source_path(path)
-        c.class_eval File.read(path)
+        c.class_eval File.read(path), path, 1
         c
       elsif(path.match(/\.qjrb$/))
         c = Class.new(QJSON::Base)
         c.source_path(path)
-        c.class_eval "def operate\n"+File.read(path)+"\nend"
+        c.class_eval "def operate\n"+File.read(path)+"\nend" , path, 1
         c
       else
         raise "Invalid Extension #{File.extname(path)}"
