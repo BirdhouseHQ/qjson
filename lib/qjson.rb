@@ -16,9 +16,9 @@ module QJSON
       collection_serializer.render(collection,context,version,options)
     end
 
-    def parse(record,json,context,version)
+    def parse(record,json,context,version,options={})
       serializer = SerializerCache.find(record,context,version)
-      serializer.parse(record,json,version)
+      serializer.parse(record,json,version,options)
     end
   end
 end
