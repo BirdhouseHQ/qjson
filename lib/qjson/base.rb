@@ -174,9 +174,9 @@ class QJSON::Base
 
   def render_as(other_context)
     if(@direction == :to_json)
-      @hash = QJSON.render(object,other_context,requested_version,options)
+      @hash = QJSON.render(object,other_context,request_version,options)
     elsif(@direction == :from_json)
-      QJSON.parse(object,hash,other_context,requested_version,options)
+      QJSON.parse(object,hash,other_context,request_version,options)
     else
       raise "InvalidDirection"
     end
