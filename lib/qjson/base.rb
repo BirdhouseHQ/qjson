@@ -172,6 +172,16 @@ class QJSON::Base
     end
   end
 
+  def render_as(other_context)
+    if(@direction == :to_json)
+      @hash = QJSON.render(object,other_context,requested_version,options)
+    elsif(@direction == :from_json)
+      QJSON.parse(object,hash,other_context,requested_version,options)
+    else
+      raise "InvalidDirection"
+    end
+  end
+
   def object_attributes
     return { } unless @object
     return @object.attributes if @object.respond_to? :attributes
