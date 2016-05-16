@@ -27,7 +27,7 @@ class QJSON::CollectionSerializer
     renderer.object = @current_item
     renderer.hash = {}
     renderer.collection_serializer = self
-    renderer.options = @options[:each_options]
+    renderer.options = @options.except(:each_options).merge(@options[:each_options] || {})
     renderer.call_to_json
 
     renderer.hash
