@@ -21,7 +21,7 @@ class QJSON::Base
     parser.object
   end
 
-  def self.render(object,requested_version,options)
+  def self.render(object,requested_version,options = {})
     renderer = self.new
 
     renderer.request_version = requested_version
